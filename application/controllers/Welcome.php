@@ -90,6 +90,7 @@ class Welcome extends CI_Controller {
 
 	public function tm_food_menu(){
 		$this->crud->set_subject('Food Menu');
+		$this->crud->set_field_upload('image', $this->config->item('image_content_path'));
 		$this->render();
 	}
 
