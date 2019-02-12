@@ -12,7 +12,6 @@ class Welcome extends CI_Controller {
 		$this->load->library('grocery_CRUD');
 		$this->crud = new grocery_CRUD();
 		//$this->crud->set_theme('twitter-bootstrap');
-		
 	}
 
 	/**
@@ -31,7 +30,7 @@ class Welcome extends CI_Controller {
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
 	public function index(){
-		$this->load->view('header_menu');
+		$this->load->view('home_cms');
 	}
 
 	private function render(){
@@ -59,7 +58,7 @@ class Welcome extends CI_Controller {
 
 	public function tm_articles_type(){
 		$this->crud->set_subject('Article Type');
-		$this->crud->set_field_upload('image','assets/uploads/files');
+		$this->crud->set_field_upload('image', $this->config->item('image_content_path'));
 		$this->crud->display_as('articles_type','Type');
 		$this->crud->display_as('desc','Description');
 		$this->render();
@@ -72,7 +71,7 @@ class Welcome extends CI_Controller {
 
 	public function tm_classes_program(){
 		$this->crud->set_subject('Class Program');
-		$this->crud->set_field_upload('image','assets/uploads/files');
+		$this->crud->set_field_upload('image', $this->config->item('image_content_path'));
 		$this->crud->display_as('desc','Description');
 		$this->render();
 	}
@@ -84,7 +83,7 @@ class Welcome extends CI_Controller {
 
 	public function tm_extracuricullar(){
 		$this->crud->set_subject('Extracuricullar');
-		$this->crud->set_field_upload('icon','assets/uploads/files');
+		$this->crud->set_field_upload('icon', $this->config->item('image_content_path'));
 		$this->crud->display_as('jenis_extracuricullar','Name');
 		$this->render();
 	}
@@ -96,15 +95,16 @@ class Welcome extends CI_Controller {
 
 	public function tm_parents(){
 		$this->crud->set_subject('Parent');
-		$this->crud->set_field_upload('image','assets/uploads/files');
+		$this->crud->set_field_upload('image', $this->config->item('image_content_path'));
+		$this->crud->set_relation('id_agama','tm_agama','nama_agama');
 		$this->render();
 	}
 
 	public function tm_school(){
 		$this->crud->set_subject('School');
-		$this->crud->set_field_upload('visi_image','assets/uploads/files');
-		$this->crud->set_field_upload('misi_image','assets/uploads/files');
-		$this->crud->set_field_upload('file_url','assets/uploads/files');
+		$this->crud->set_field_upload('visi_image', $this->config->item('image_content_path'));
+		$this->crud->set_field_upload('misi_image', $this->config->item('image_content_path'));
+		$this->crud->set_field_upload('file_url', $this->config->item('image_content_path'));
 		$this->crud->display_as('name_school','School Name');
 		$this->render();
 	}
@@ -117,7 +117,7 @@ class Welcome extends CI_Controller {
 
 	public function tm_teachers(){
 		$this->crud->set_subject('Teacher');
-		$this->crud->set_field_upload('image','assets/uploads/files');
+		$this->crud->set_field_upload('image', $this->config->item('image_content_path'));
 		$this->crud->set_relation('id_agama','tm_agama','nama_agama');
 		$this->render();
 	}
@@ -135,13 +135,42 @@ class Welcome extends CI_Controller {
 		$this->render();
 	}
 
-	// transaction
+	public function tm_contact(){
+		$this->crud->set_subject('Contact');
+		$this->render();
+	}
+
+	public function tm_experience(){
+		$this->crud->set_subject('Experience');
+		$this->render();
+	}
+
+	public function tm_gallery(){
+		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
+		$this->crud->set_subject('Image Gallery');
+		$this->render();
+	}
+
+	public function tp_testimoni_parents(){
+		$this->crud->set_subject('Parent Testimonial');
+		$this->crud->set_relation('id_parents','tm_parents','nama');
+		$this->crud->display_as('id_parents','Name');
+		$this->render();
+	}
+
+	public function tm_about_us(){
+		$this->crud->set_subject('About Us');
+		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
+		$this->render();
+	}
+
+	// transaction =========================================================================================
 
 	public function input_news(){
 		$this->crud->set_subject('News');
 		$this->crud->set_table('tm_news');
 		$this->crud->set_relation('user_id','tm_users','username');
-		$this->crud->set_field_upload('image','assets/uploads/files');
+		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
 		$this->crud->display_as('desc','Description');
 		$this->crud->display_as('user_id','User Created');
 		$this->render();
@@ -151,7 +180,7 @@ class Welcome extends CI_Controller {
 		$this->crud->set_subject('Articles');
 		$this->crud->set_table('tm_articles');
 		$this->crud->set_relation('articles_type_id','tm_articles_type','articles_type');
-		$this->crud->set_field_upload('image','assets/uploads/files');
+		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
 		$this->render();
 	}
 
@@ -272,6 +301,29 @@ class Welcome extends CI_Controller {
 		$this->crud->unset_delete();
 
 		$this->render();   
+	}
+
+	public function tx_videos(){
+		$this->crud->set_subject('Videos');
+		$this->crud->set_field_upload('video',$this->config->item('image_content_path'));
+		$this->render();
+	}
+
+	public function tm_school_improvement(){
+		$this->crud->set_subject('School Improvement');
+		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
+		$this->render();
+	}
+
+	public function tm_other_service(){
+		$this->crud->set_subject('Other Service');
+		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
+		$this->render();
+	}
+
+	public function tx_calendar(){
+		$this->crud->set_subject('Callendar');
+		$this->render();
 	}
 
 	function _example_output($output = null){
