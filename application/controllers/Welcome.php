@@ -34,9 +34,9 @@ class Welcome extends CI_Controller {
 	}
 
 	private function render(){
-		$this->crud->unset_columns(array('created_at','updated_at', 'role_parents', 'id_jam'));
-		$this->crud->unset_edit_fields(array('created_at','updated_at', 'role_parents', 'id_jam'));
-		$this->crud->unset_add_fields(array('created_at','updated_at', 'role_parents', 'id_jam'));
+		$this->crud->unset_columns(array('created_at','updated_at', 'role_parents', 'id_jam', 'title2', 'title3', 'is_active'));
+		$this->crud->unset_edit_fields(array('created_at','updated_at', 'role_parents', 'id_jam', 'title2', 'title3', 'is_active'));
+		$this->crud->unset_add_fields(array('created_at','updated_at', 'role_parents', 'id_jam', 'title2', 'title3', 'is_active'));
 		$output = $this->crud->render();
 		$this->_example_output($output);
 	}
@@ -72,6 +72,7 @@ class Welcome extends CI_Controller {
 	public function tm_classes_program(){
 		$this->crud->set_subject('Class Program');
 		$this->crud->set_field_upload('image', $this->config->item('image_content_path'));
+		$this->crud->display_as('program','Title');
 		$this->crud->display_as('desc','Description');
 		$this->render();
 	}
@@ -172,7 +173,7 @@ class Welcome extends CI_Controller {
 		$this->crud->set_table('tm_news');
 		$this->crud->set_relation('user_id','tm_users','username');
 		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
-		$this->crud->display_as('desc','Description');
+		$this->crud->display_as('desc','Content');
 		$this->crud->display_as('user_id','User Created');
 		$this->render();
 	}
@@ -182,6 +183,8 @@ class Welcome extends CI_Controller {
 		$this->crud->set_table('tm_articles');
 		$this->crud->set_relation('articles_type_id','tm_articles_type','articles_type');
 		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
+		$this->crud->display_as('articles_type_id','Article Type');
+		$this->crud->display_as('desc','Description');
 		$this->render();
 	}
 
