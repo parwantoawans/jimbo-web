@@ -49,6 +49,7 @@
                     <div class="collapse" id="collapseTransaction">
                         <ul class="nav">
                             <!-- Main menu -->
+                            <li><a href="welcome/tx_field_trip"  target="content_list"><i class="glyphicon glyphicon-asterisk"></i> Field Trip</a></li>
                             <li><a href="welcome/input_nilai"  target="content_list"><i class="glyphicon glyphicon-asterisk"></i> value of subjects</a></li>
                             <li><a href="welcome/input_makanan"  target="content_list"><i class="glyphicon glyphicon-asterisk"></i> Foods</a></li>
                             <li><a href="welcome/input_extracuricullar"  target="content_list"><i class="glyphicon glyphicon-asterisk"></i> Extracuricullars</a></li>

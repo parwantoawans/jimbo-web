@@ -330,6 +330,17 @@ class Welcome extends CI_Controller {
 		$this->render();
 	}
 
+	public function tx_field_trip(){
+		$this->crud->set_subject('Field Trip');
+		$this->crud->set_field_upload('main_image', $this->config->item('image_content_path'));
+		$this->crud->set_field_upload('image_1', $this->config->item('image_content_path'));
+		$this->crud->set_field_upload('image_2', $this->config->item('image_content_path'));
+		$this->crud->set_field_upload('image_3', $this->config->item('image_content_path'));
+		$this->crud->set_field_upload('image_4', $this->config->item('image_content_path'));
+		$this->crud->set_field_upload('image_5', $this->config->item('image_content_path'));
+		$this->render();
+	}
+
 	function _example_output($output = null){
 		$this->load->view('example.php',$output); 
 	}
