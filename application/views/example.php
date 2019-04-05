@@ -9,9 +9,7 @@ foreach($css_files as $file): ?>
 <?php endforeach; ?>
 </head>
 <body>
-	<!--<?php $this->load->view('header_menu'); ?>-->
-	<div style='height:20px;'></div>  
-    <div style="padding: 10px">
+    <div style="padding: 1px">
 		<?php echo $output; ?>
     </div>
     <?php foreach($js_files as $file): ?>

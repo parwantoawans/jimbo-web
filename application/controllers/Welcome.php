@@ -11,7 +11,10 @@ class Welcome extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->library('grocery_CRUD');
 		$this->crud = new grocery_CRUD();
+		$this->load->model('Menu_Model');
 		//$this->crud->set_theme('twitter-bootstrap');
+		header('Access-Control-Allow-Origin: *');
+		header("Access-Control-Allow-Methods: GET, OPTIONS");
 	}
 
 	/**
@@ -30,7 +33,9 @@ class Welcome extends CI_Controller {
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
 	public function index(){
-		$this->load->view('home_cms');
+		//$this->load->view('home_cms');
+		$data['menu'] = $this->Menu_Model->getMenuList();
+		$this->load->view('dashboard', $data);
 	}
 
 	private function render(){
@@ -166,6 +171,16 @@ class Welcome extends CI_Controller {
 		$this->render();
 	}
 
+	public function tm_menu(){
+		$this->crud->set_subject('User Menu');
+		$this->render();
+	}
+
+	public function tm_menu_group(){
+		$this->crud->set_subject('User Group Menu');
+		$this->render();
+	}
+	
 	// transaction =========================================================================================
 
 	public function input_news(){
@@ -338,6 +353,36 @@ class Welcome extends CI_Controller {
 		$this->crud->set_field_upload('image_3', $this->config->item('image_content_path'));
 		$this->crud->set_field_upload('image_4', $this->config->item('image_content_path'));
 		$this->crud->set_field_upload('image_5', $this->config->item('image_content_path'));
+		$this->render();
+	}
+
+	public function tx_menu_role(){
+		$this->crud->set_subject('Group Menu Role');
+		$this->render();
+	}
+
+	public function menu_group_map(){
+		$this->crud->set_subject('Group Menu Map');
+
+		$this->crud->set_table('tp_menu_group');
+		$this->crud->set_relation('group_menu_id','tm_menu_group','group_menu_name');
+		$this->crud->set_relation('menu_id','tm_menu','menu_name');
+
+		$this->crud->display_as('group_menu_id','Group Menu');
+		$this->crud->display_as('menu_id','Menu');
+
+		$this->render();
+	}
+
+	public function menu_role_map(){
+		
+
+		$this->crud->set_table('tp_role_map');
+		$this->crud->set_relation('menu_role_id','tx_menu_role','role_name');
+		$this->crud->set_relation('menu_id','tm_menu','menu_name');
+
+		$this->crud->set_subject('Role Menu Map');
+
 		$this->render();
 	}
 
