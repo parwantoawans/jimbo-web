@@ -102,6 +102,11 @@ class Welcome extends CI_Controller {
 		$this->_example_output($output);
 	}
 
+	public function tx_testing_calendar(){
+		$this->crud->set_subject('Testing Calendar');
+		$this->render();
+	}
+
 	public function students(){
 
 		$this->crud->set_table('tm_students');
