@@ -66,6 +66,7 @@
             $groupMenu[$value['group_menu_name']][] = $value;
         }
         $count = 0;
+        $webMenuCount = 0;
         $webMenuHeader = '<ul class="nav nav-tabs notika-menu-wrap menu-it-icon-pro">';
         
         $webItemMenu = "";
@@ -73,22 +74,38 @@
         foreach($groupMenu as $groupKey => $groupValue){
 
             $groupReff = strtolower(str_replace(' ', '', $groupKey));
-            $webMenuHeader .= '<li' . ($count == 0 ? ' class="active"' : '') .'><a data-toggle="tab" href="#web'.$groupReff.'">' . ($count == 0 ? '<i class="notika-icon notika-house"></i>' : '').' '.$groupKey.'</a></li>';
-            
-            $mobileMenu .= '<li><a data-toggle="collapse" data-target="#'.$groupReff.'" href="#">'.$groupKey.'</a><ul id="'.$groupReff.'" class="collapse dropdown-header-top">';
-            
-            $webItemMenu .= '<div id="web'.$groupReff.'" class="tab-pane ' . ($count == 0 ? 'in active ' : '') .'notika-tab-menu-bg animated flipInX"><ul class="notika-main-menu-dropdown">';
-            foreach($groupValue as $itemKey => $itemValue){
-                $webItemMenu .= '<li><a href="'.$itemValue['menu_path'].'" target="content_list">'.$itemValue['menu_name'].'</a></li>';
-                $mobileMenu .= '<li><a href="'.$itemValue['menu_path'].'" target="content_list">'.$itemValue['menu_name'].'</a></li>';
-            }
-            $webItemMenu .= '</ul></div>';
 
-            $mobileMenu .= '</ul></li>';
+            // filter for parent tab menu
+            $isSubItemExixst = false;
+            $webMenuItemBuff = "";
+            foreach($groupValue as $itemKey => $itemValue){ // loop for menu item
+                $itemMenuId = $itemValue['menu_id'];
+                $addToItem = false;
+                foreach($user_menu as $k => $v){ // loop for user access role menu
+                    if($itemMenuId == $v['menu_id']){
+                        $addToItem = true;
+                        $isSubItemExixst = true;
+                    }
+                }
+                if($addToItem){
+                    $webMenuItemBuff .= '<li><a href="'.$itemValue['menu_path'].'" target="content_list">'.$itemValue['menu_name'].'</a></li>';
+                }
+            }
+
+            if($isSubItemExixst){
+                $webMenuHeader .= '<li' . ($webMenuCount == 0 ? ' class="active"' : '') .'><a data-toggle="tab" href="#web'.$groupReff.'">' . ($webMenuCount == 0 ? '<i class="notika-icon notika-house"></i>' : '').' '.$groupKey.'</a></li>';  
+                $webItemMenu .= '<div id="web'.$groupReff.'" class="tab-pane ' . ($webMenuCount == 0 ? 'in active ' : '') .'notika-tab-menu-bg animated flipInX"><ul class="notika-main-menu-dropdown">' . $webMenuItemBuff . '</ul></div>';
+                $mobileMenu .= '<li><a data-toggle="collapse" data-target="#'.$groupReff.'" href="#">'.$groupKey.'</a><ul id="'.$groupReff.'" class="collapse dropdown-header-top">' . $webMenuItemBuff . '</ul></li>'; 
+                $webMenuCount++;
+            }
+
+            $webItemMenu .= '';
+
+            $mobileMenu .= '';
 
             $count++;
         }
-        $webMenuHeader .= '</ul>';
+        $webMenuHeader .= '<li><a href="welcome/logout">Logout</a></li></ul>';
     ?>
     <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -225,15 +242,15 @@
 		============================================ -->
     <script src="js/plugins.js"></script>
 	<!--  Chat JS
-		============================================ -->
+		============================================ 
     <script src="js/chat/moment.min.js"></script>
-    <script src="js/chat/jquery.chat.js"></script>
+    <script src="js/chat/jquery.chat.js"></script>-->
     <!-- main JS
 		============================================ -->
     <script src="js/main.js"></script>
 	<!-- tawk chat JS
-		============================================ -->
-    <script src="js/tawk-chat.js"></script>
+		============================================ 
+    <script src="js/tawk-chat.js"></script>-->
 </body>
 
 </html>

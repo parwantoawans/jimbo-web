@@ -4,17 +4,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Welcome extends CI_Controller {
 
 	var $crud;
+	var $isLogIn = false;
 
 	public function __construct(){
 		parent::__construct();
 		$this->load->database();
 		$this->load->helper('url');
+		$this->load->helper('form');
 		$this->load->library('grocery_CRUD');
 		$this->crud = new grocery_CRUD();
 		$this->load->model('Menu_Model');
+		$this->load->model('User_Model');
+		$this->load->library('session');
 		//$this->crud->set_theme('twitter-bootstrap');
 		header('Access-Control-Allow-Origin: *');
 		header("Access-Control-Allow-Methods: GET, OPTIONS");
+
+		$this->isLogIn = $this->session->userdata('logged');
 	}
 
 	/**
@@ -33,12 +39,62 @@ class Welcome extends CI_Controller {
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
 	public function index(){
+
+		if(is_null($this->isLogIn) || !$this->isLogIn){
+			redirect('/welcome/login/');
+		}
+
+		$userMenu = $this->Menu_Model->getUserMenu($this->session->userdata('role_id'));
+		
 		//$this->load->view('home_cms');
 		$data['menu'] = $this->Menu_Model->getMenuList();
+		$data['user_menu'] = $userMenu;
 		$this->load->view('dashboard', $data);
 	}
 
+	public function login(){
+		$data['msg'] = $this->session->userdata('login_err');
+		$this->load->view('login', $data);
+	}
+
+	public function doLogin(){
+
+		$this->load->library('form_validation');
+
+		$this->form_validation->set_rules('username', 'Username', 'trim|required|min_length[6]|max_length[15]');
+		$this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[5]|max_length[15]');
+
+		if ($this->form_validation->run() == FALSE){
+			$this->session->set_userdata('login_err', base64_encode(validation_errors()));
+            redirect('/welcome/login/');
+        }else{
+			$userData = $this->User_Model->login($this->input->post('username'), $this->input->post('password'));
+			if(is_array($userData) && count($userData)>0){
+				$this->session->set_userdata('logged', true);
+				$this->session->set_userdata('user_name', $userData[0]['username']);
+				$this->session->set_userdata('user_id', $userData[0]['user_id']);
+				$this->session->set_userdata('role_id', $userData[0]['menu_role_id']);
+				$this->session->unset_userdata('login_err');
+				redirect('/');
+			}else{
+				$this->session->set_userdata('login_err', 'No User Exists');
+            	redirect('/welcome/login/');
+			}
+        }
+
+	}
+
+	public function logout(){
+		$this->session->sess_destroy();
+		redirect('/welcome/login/');
+	}
+
 	private function render(){
+
+		if(is_null($this->isLogIn) || !$this->isLogIn){
+			redirect('/welcome/login/');
+		}
+
 		$this->crud->unset_columns(array('created_at','updated_at', 'role_parents', 'id_jam', 'title2', 'title3', 'is_active'));
 		$this->crud->unset_edit_fields(array('created_at','updated_at', 'role_parents', 'id_jam', 'title2', 'title3', 'is_active'));
 		$this->crud->unset_add_fields(array('created_at','updated_at', 'role_parents', 'id_jam', 'title2', 'title3', 'is_active'));
@@ -315,8 +371,8 @@ class Welcome extends CI_Controller {
 		$this->crud->display_as('id_tahun_ajaran','Tahun Ajaran');
 		$this->crud->display_as('id_type_nilai','Tipe Nilai');
 
-		$this->crud->unset_add();
-		$this->crud->unset_edit();
+		//$this->crud->unset_add();
+		//$this->crud->unset_edit();
 		$this->crud->unset_delete();
 
 		$this->render();   
@@ -376,10 +432,12 @@ class Welcome extends CI_Controller {
 
 	public function menu_role_map(){
 		
-
 		$this->crud->set_table('tp_role_map');
 		$this->crud->set_relation('menu_role_id','tx_menu_role','role_name');
 		$this->crud->set_relation('menu_id','tm_menu','menu_name');
+
+		$this->crud->display_as('menu_role_id','Menu Role');
+		$this->crud->display_as('menu_id','Menu');
 
 		$this->crud->set_subject('Role Menu Map');
 
