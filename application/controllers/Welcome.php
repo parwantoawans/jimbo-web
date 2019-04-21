@@ -41,7 +41,8 @@ class Welcome extends CI_Controller {
 	public function index(){
 
 		if(is_null($this->isLogIn) || !$this->isLogIn){
-			redirect('/welcome/login/');
+			redirect('/welcome/login/', 'refresh');
+			//echo "<script>top.location.replace('".base_url()."');</script>";
 		}
 
 		$userMenu = $this->Menu_Model->getUserMenu($this->session->userdata('role_id'));
@@ -187,8 +188,19 @@ class Welcome extends CI_Controller {
 		$this->crud->set_subject('Teacher');
 		$this->crud->set_field_upload('image', $this->config->item('image_content_path'));
 		$this->crud->set_relation('id_agama','tm_agama','nama_agama');
+		$this->crud->display_as('npwp','NIP');
+		
+		//$this->crud->change_field_type('jenis_kelamin','true_false');
+		$this->crud->callback_add_field('jenis_kelamin',array($this,'add_field_callback_kelamin'));
+        $this->crud->callback_edit_field('jenis_kelamin',array($this,'add_field_callback_kelamin'));
 		$this->render();
 	}
+
+	function add_field_callback_kelamin($value = '', $primary_key = null){
+        return ' 
+  			<input type="radio" '.($value==1?"checked":"").' name="jenis_kelamin" value="1" id="jenis_kelamin"/> Pria<br/>
+  			<input type="radio" '.($value==0?"checked":"").' name="jenis_kelamin" value="0" id="jenis_kelamin"/> Wanita<br/>';
+    }
 
 	public function tm_type_nilai(){
 		$this->crud->set_subject('Value of Subject');
@@ -245,13 +257,68 @@ class Welcome extends CI_Controller {
 	// transaction =========================================================================================
 
 	public function input_news(){
+
 		$this->crud->set_subject('News');
 		$this->crud->set_table('tm_news');
 		$this->crud->set_relation('user_id','tm_users','username');
 		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
 		$this->crud->display_as('desc','Content');
 		$this->crud->display_as('user_id','User Created');
+
+		$this->crud->callback_after_insert(array($this, 'newsBlastAfterInsert'));
+
 		$this->render();
+	}
+
+	function newsBlastAfterInsert($post_array, $primary_key){
+		/**
+		 * array(5) {
+			["title"]=>
+			string(13) "Test Callback"
+			["desc"]=>
+			string(204) "All the callbacks are well documented with an example of usage at the API and functions section of the website. Each callback takes different parameter so you have to check the example first from the API."
+			["s78805a22"]=>
+			string(0) ""
+			["image"]=>
+			string(11) "36563-4.jpg"
+			["user_id"]=>
+			string(0) ""
+			}
+		 */
+		//var_dump($post_array['title']);
+		//var_dump($post_array['desc']);
+		//var_dump($post_array['image']);
+		
+		$subscData = $this->User_Model->getSubscriber();
+		
+		if(is_array($subscData) && count($subscData)>0){
+
+			// load the library
+			$this->load->library('email');
+
+			$config = array();
+			$config['protocol'] = 'smtp';
+			$config['smtp_host'] = 'ssl://smtp.googlemail.com';
+			$config['smtp_user'] = 'parwanto@digitalbuana.com';
+			$config['smtp_pass'] = 'P@ssw0rd)(*&DigitalBuana1';
+			$config['smtp_port'] = 465;
+			$this->email->initialize($config);
+
+			$this->email->set_newline("\r\n");
+
+			$this->email->from('no-reply@jimboree.co.id', 'News Maker');
+			$buffMailAddr = array();
+			foreach($subscData as $k => $v){
+				$buffMailAddr[] = $v['email'];
+			}
+
+			// send email to
+			$this->email->to($buffMailAddr);
+			$this->email->subject($post_array['title'] . ' - Jimboree');
+			$this->email->message($post_array['desc']);
+
+			$this->email->send();
+		}
 	}
 
 	public function input_article(){
@@ -347,8 +414,29 @@ class Welcome extends CI_Controller {
 		$this->crud->display_as('peg_id','Nama Guru');
 		$this->crud->display_as('mid','Mata Pelajaran');
 
+
+
+		$this->crud->field_type('jam_mulai','dropdown',$this->jam_belajar());
+		$this->crud->field_type('jam_selesai','dropdown',$this->jam_belajar());
+
 		$this->render(); 
 	}
+
+	function jam_belajar(){
+        return array(
+			'07:00:00' => '07:00',
+			'08:00:00' => '08:00',
+			'09:00:00' => '09:00',
+			'10:00:00' => '10:00',
+			'11:00:00' => '11:00',
+			'12:00:00' => '12:00',
+			'13:00:00' => '13:00',
+			'14:00:00' => '14:00',
+			'15:00:00' => '15:00',
+			'16:00:00' => '16:00',
+			'17:00:00' => '17:00',
+		);
+    }
 
 	public function input_kelas(){
 
@@ -360,15 +448,21 @@ class Welcome extends CI_Controller {
 	}
 
 	// fungsi ini untuk orang tua
-	public function nilai_anak( $id = 0 ){
+	public function nilai_anak(){
 
-		$this->crud->where('tx_nilai.nis',$id);
+		$id = $this->session->userdata('user_id');
+
+		//echo "id:".$id;
+
+		//$this->crud->where('tx_nilai.nis',$id);
 		
 		$this->crud->set_table('tx_nilai');
 		$this->crud->set_relation('nis','tm_students','nama_panggilan');
 		$this->crud->set_relation('mid','tm_subjects','nama_mapel');
 		$this->crud->set_relation('id_tahun_ajaran','tp_school_year','desc');
 		$this->crud->set_relation('id_type_nilai','tm_type_nilai','desc');
+		//$this->crud->set_relation('nis', 'tp_student_parent', 'nis');
+		//$this->crud->set_relation_n_n('orangtua', 'tp_student_parent', 'tm_parents', 'nis', 'id_parents', 'nama');
 
 		$this->crud->set_subject('Nilai');
 		$this->crud->display_as('nis','Nama Siswa');
@@ -379,6 +473,8 @@ class Welcome extends CI_Controller {
 		//$this->crud->unset_add();
 		//$this->crud->unset_edit();
 		$this->crud->unset_delete();
+		$this->crud->unset_clone();
+		$this->crud->unset_export();
 
 		$this->render();   
 	}

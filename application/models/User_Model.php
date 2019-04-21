@@ -3,6 +3,7 @@
 class User_Model extends CI_Model{
 
     var $userTable = "tm_users";
+    var $subscTable = "tm_subscribe";
 
     function __construct(){
         parent::__construct();
@@ -21,6 +22,12 @@ class User_Model extends CI_Model{
                 'username' => $username,
                 'password' => md5($password)
             ));
+        return $this->db->get()->result_array();
+    }
+
+    function getSubscriber(){
+        $this->db->select('*')
+            ->from($this->subscTable);
         return $this->db->get()->result_array();
     }
 
