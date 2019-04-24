@@ -494,6 +494,7 @@ class Welcome extends CI_Controller {
 	public function tm_other_service(){
 		$this->crud->set_subject('Other Service');
 		$this->crud->set_field_upload('image',$this->config->item('image_content_path'));
+		$this->crud->set_field_upload('thumb',$this->config->item('image_content_path'));
 		$this->render();
 	}
 
