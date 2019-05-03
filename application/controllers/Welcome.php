@@ -152,6 +152,7 @@ class Welcome extends CI_Controller {
 	public function tm_extracuricullar(){
 		$this->crud->set_subject('Extracuricullar');
 		$this->crud->set_field_upload('icon', $this->config->item('image_content_path'));
+		$this->crud->set_field_upload('thumb', $this->config->item('image_content_path'));
 		$this->crud->display_as('jenis_extracuricullar','Name');
 		$this->render();
 	}
