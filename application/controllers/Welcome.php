@@ -193,7 +193,10 @@ class Welcome extends CI_Controller {
 		
 		//$this->crud->change_field_type('jenis_kelamin','true_false');
 		$this->crud->callback_add_field('jenis_kelamin',array($this,'add_field_callback_kelamin'));
-        $this->crud->callback_edit_field('jenis_kelamin',array($this,'add_field_callback_kelamin'));
+		$this->crud->callback_edit_field('jenis_kelamin',array($this,'add_field_callback_kelamin'));
+		
+		$this->crud->callback_column('jenis_kelamin',array($this,'_callback_sex'));
+
 		$this->render();
 	}
 
@@ -201,7 +204,17 @@ class Welcome extends CI_Controller {
         return ' 
   			<input type="radio" '.($value==1?"checked":"").' name="jenis_kelamin" value="1" id="jenis_kelamin"/> Pria<br/>
   			<input type="radio" '.($value==0?"checked":"").' name="jenis_kelamin" value="0" id="jenis_kelamin"/> Wanita<br/>';
-    }
+	}
+	
+	public function _callback_sex($value, $row){
+		if ($value == 1) {
+			return 'Pria';
+		} elseif ($value == 0) {
+			return 'Wanita';
+		} else {
+			return "-";
+		}
+	}
 
 	public function tm_type_nilai(){
 		$this->crud->set_subject('Value of Subject');
